@@ -61,6 +61,9 @@ class Annex(object):
         for plugin_file in self.plugin_files:
             self._load_plugin(plugin_file)
 
+    def __len__(self):
+        return len(self.loaded_modules)
+
     def __iter__(self):
         for modules in self.loaded_modules.itervalues():
             for plugin in modules.plugins:

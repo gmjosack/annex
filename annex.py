@@ -48,7 +48,6 @@ class Annex(object):
 
         self.base_plugin = base_plugin
         self.plugin_dirs = set()
-        self.plugin_files = []
         self.loaded_modules = {}
 
         for plugin_dir in plugin_dirs:
@@ -57,8 +56,7 @@ class Annex(object):
             else:
                 self.plugin_dirs.update(plugin_dir)
 
-        self.plugin_files = self._get_plugin_files(self.plugin_dirs)
-        for plugin_file in self.plugin_files:
+        for plugin_file in self._get_plugin_files(self.plugin_dirs):
             self._load_plugin(plugin_file)
 
     def __len__(self):
@@ -68,6 +66,12 @@ class Annex(object):
         for modules in self.loaded_modules.itervalues():
             for plugin in modules.plugins:
                 yield plugin
+
+    def __getattr__(self, name):
+        for plugin in self:
+            if plugin.__class__.__name__ == name:
+                return plugin
+        raise AttributeError
 
     def reload(self):
         logger.debug("Reloading Plugins...")

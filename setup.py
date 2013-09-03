@@ -6,7 +6,7 @@ execfile('annex/version.py')
 
 kwargs = {
     "name": "annex",
-    "version": __version__,
+    "version": str(__version__),
     "packages": ["annex"],
     "scripts": [],
     "description": "A Simple Plugin System for Python",

@@ -9,10 +9,11 @@ import imp
 import inspect
 import os
 
+from .version import __version__
+
 logger = logging.getLogger("annex")
 
 __author__ = "Gary M. Josack <gary@byoteki.com>"
-__version__ = 0.1
 
 
 def _md5sum(file_path):

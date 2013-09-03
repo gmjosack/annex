@@ -2,10 +2,12 @@
 
 from distutils.core import setup
 
+execfile('annex/version.py')
+
 kwargs = {
     "name": "annex",
-    "version": "0.1",
-    "py_modules": ["annex"],
+    "version": __version__,
+    "packages": ["annex"],
     "scripts": [],
     "description": "A Simple Plugin System for Python",
     "author": "Gary M. Josack",

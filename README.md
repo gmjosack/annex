@@ -13,8 +13,7 @@ In your project you would define a base class from which all plugins for
 project would subclass.
 
 
-#### base\_plugin.py
-
+##### base\_plugin.py
 ```python
 class BaseTestPlugin(object):
     def run(self, *args, **kwargs):
@@ -22,8 +21,7 @@ class BaseTestPlugin(object):
 ```
 
 
-#### example\_plugin.py
-
+##### example\_plugin.py
 ```python
 from base_plugin import BaseTestPlugin
 
@@ -32,8 +30,7 @@ class PrinterPlugin(BaseTestPlugin):
         print args, kwargs
 ```
 
-#### foo.py
-
+##### foo.py
 ```Python
 from base_plugin import BaseTestPlugin
 from annex import Annex

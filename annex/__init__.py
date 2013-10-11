@@ -1,5 +1,12 @@
 #!/usr/bin/env python
 
+""" Annex provides assistance with developing plugin-based tools.
+
+With Annex you can load and reload plugins from various python modules without
+the requirement that they exist on the PYTHONPATH.
+
+"""
+
 from __future__ import with_statement
 
 import glob
@@ -17,6 +24,15 @@ __author__ = "Gary M. Josack <gary@byoteki.com>"
 
 
 def _md5sum(file_path):
+    """ Helper function that builds and md5sum from a file in chunks.
+
+    Args:
+        file_path: The path to the file you want an md5sum for.
+
+    Returns:
+        A string containing an md5sum.
+
+    """
     md5 = hashlib.md5()
 
     with open(file_path) as md5_file:
@@ -30,6 +46,14 @@ def _md5sum(file_path):
 
 
 class PluginModule(object):
+    """ Container for the plugins contained in a single module file.
+
+    Attributes:
+        plugin_file: Path to the file in which this plugin module was loaded.
+        plugins: A list containing instances of plugins loaded from the plugin_file.
+        md5: An md5 of the plugin_file's contents.
+
+    """
     def __init__(self, plugin_file, plugins):
         self.plugin_file = plugin_file
         self.plugins = plugins
@@ -37,14 +61,22 @@ class PluginModule(object):
 
 
 class Annex(object):
+    """ Class for loading and retreiving various plugins.
+
+    Attributes:
+        base_plugin: Class from which your plugins subclass. This is used to
+            decide which plugins will be loaded.
+        plugin_dirs: A set of all directories where plugins can be loaded from.
+        loaded_modules: A dictionary mapping plugin module filenames to
+            PluginModule objects.
+
+    """
     def __init__(self, base_plugin, *plugin_dirs):
         """ Initializes plugins given paths to directories containing plugins.
 
-            Args:
-                base_class: Class from which your plugins subclass. This is
-                            used to ensure only your modules can be loaded.
-                plugin_dirs: Can be a string or a list containing an absolute path
-                             to a directory containing plugins.
+        Args:
+            *plugin_dirs: Can be a string or a list containing an absolute path
+                to a directory containing plugins. Any lists will be flattened.
         """
 
         self.base_plugin = base_plugin
@@ -75,6 +107,13 @@ class Annex(object):
         raise AttributeError
 
     def reload(self):
+        """ Reloads modules from the current plugin_dirs.
+
+        This method will search the plugin_dirs attribute finding new plugin modules,
+        updating plugin modules that have changed, and unloading plugin modules that
+        no longer exist.
+
+        """
         logger.debug("Reloading Plugins...")
 
         deleted_modules = set(self.loaded_modules.keys())

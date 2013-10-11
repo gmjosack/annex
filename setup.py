@@ -10,6 +10,7 @@ kwargs = {
     "packages": ["annex"],
     "scripts": [],
     "description": "A Simple Plugin System for Python",
+    "long_description": open("README").read(),
     "author": "Gary M. Josack",
     "maintainer": "Gary M. Josack",
     "author_email": "gary@byoteki.com",

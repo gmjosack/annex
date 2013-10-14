@@ -71,17 +71,21 @@ class Annex(object):
             PluginModule objects.
 
     """
-    def __init__(self, base_plugin, *plugin_dirs):
+    def __init__(self, base_plugin, plugin_dirs, instantiate=True):
         """ Initializes plugins given paths to directories containing plugins.
 
         Args:
-            *plugin_dirs: Can be a string or a list containing an absolute path
-                to a directory containing plugins. Any lists will be flattened.
+            plugin_dirs: Can be a multilayered list of strings, which will be
+                flattened, containing an absolute path to a directory
+                containing plugins.
+            instantiate: By default Annex will instantiate your plugins. Some
+                times you need the control of instantiating them yourself.
         """
 
         self.base_plugin = base_plugin
         self.plugin_dirs = set()
         self.loaded_modules = {}
+        self._instantiate = instantiate
 
         for plugin_dir in plugin_dirs:
             if isinstance(plugin_dir, basestring):
@@ -146,7 +150,9 @@ class Annex(object):
                 if (inspect.isclass(obj) and
                     issubclass(obj, self.base_plugin) and
                     name != self.base_plugin.__name__):
-                    plugins.append(obj())
+                    if self._instantiate:
+                        obj = obj()
+                    plugins.append(obj)
 
             if plugins:
                 self.loaded_modules[plugin_file] = PluginModule(plugin_file, plugins)

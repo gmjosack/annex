@@ -1,0 +1,6 @@
+0.2
+------------
+ * Stopped using *args in Annix __init__ as it makes adding non-breaking
+   changes more difficult.
+ * Added the ability to prevent instantiation of plugins for cases where
+   it makes sense to defer to the caller.

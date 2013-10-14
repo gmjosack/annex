@@ -106,7 +106,11 @@ class Annex(object):
 
     def __getattr__(self, name):
         for plugin in self:
-            if plugin.__class__.__name__ == name:
+            if self._instantiate:
+                obj_name = plugin.__class__.__name__
+            else:
+                obj_name = plugin.__name__
+            if obj_name == name:
                 return plugin
         raise AttributeError
 

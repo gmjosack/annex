@@ -35,7 +35,7 @@ class PrinterPlugin(BaseTestPlugin):
 from base_plugin import BaseTestPlugin
 from annex import Annex
 
-plugins = Annex(BaseTestPlugin, "/path/to/plugins")
+plugins = Annex(BaseTestPlugin, ["/path/to/plugins"])
 
 for plugin in plugins:
     plugin.run("foo", bar="baz")

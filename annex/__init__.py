@@ -71,7 +71,7 @@ class Annex(object):
             PluginModule objects.
 
     """
-    def __init__(self, base_plugin, plugin_dirs, instantiate=True):
+    def __init__(self, base_plugin, plugin_dirs, instantiate=True, raise_exceptions=False):
         """ Initializes plugins given paths to directories containing plugins.
 
         Args:
@@ -86,6 +86,7 @@ class Annex(object):
         self.plugin_dirs = set()
         self.loaded_modules = {}
         self._instantiate = instantiate
+        self._raise_exceptions = raise_exceptions
 
         for plugin_dir in plugin_dirs:
             if isinstance(plugin_dir, basestring):
@@ -163,6 +164,8 @@ class Annex(object):
 
         except Exception, err:
             logger.exception("Failed to load %s: %s", plugin_file, err)
+            if self._raise_exceptions:
+                raise
 
     @staticmethod
     def _import_plugin(path):

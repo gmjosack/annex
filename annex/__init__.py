@@ -71,7 +71,8 @@ class Annex(object):
             PluginModule objects.
 
     """
-    def __init__(self, base_plugin, plugin_dirs, instantiate=True, raise_exceptions=False):
+    def __init__(self, base_plugin, plugin_dirs, instantiate=True, raise_exceptions=False,
+            additional_plugin_callback=None):
         """ Initializes plugins given paths to directories containing plugins.
 
         Args:
@@ -80,6 +81,10 @@ class Annex(object):
                 containing plugins.
             instantiate: By default Annex will instantiate your plugins. Some
                 times you need the control of instantiating them yourself.
+            additional_plugin_callback: Function that's called after all
+            `plugin_dirs` have loaded. This function should return a list of
+            `base_plugin` derived 'additional' classes (which will be returned
+            when iterating plugins).
         """
 
         self.base_plugin = base_plugin
@@ -87,6 +92,7 @@ class Annex(object):
         self.loaded_modules = {}
         self._instantiate = instantiate
         self._raise_exceptions = raise_exceptions
+        self.additional_plugins = []
 
         for plugin_dir in plugin_dirs:
             if isinstance(plugin_dir, basestring):
@@ -97,12 +103,23 @@ class Annex(object):
         for plugin_file in self._get_plugin_files(self.plugin_dirs):
             self._load_plugin(plugin_file)
 
+        if additional_plugin_callback:
+            additional_plugins = additional_plugin_callback()
+            for plugin in additional_plugins:
+                if self._instantiate:
+                    plugin = plugin()
+                self.additional_plugins.append(plugin)
+
     def __len__(self):
         return len(self.loaded_modules)
 
     def __iter__(self):
         for modules in self.loaded_modules.itervalues():
             for plugin in modules.plugins:
+                yield plugin
+
+        if self.additional_plugins:
+            for plugin in self.additional_plugins:
                 yield plugin
 
     def __getattr__(self, name):

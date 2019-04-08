@@ -18,6 +18,13 @@ import os
 
 from .version import __version__
 
+# Handle string detection without adding a dependency on any external modules.
+try:
+    basestring = basestring
+except NameError:
+    # basestring is undefined, must be Python 3.
+    basestring = (str, bytes)
+
 logger = logging.getLogger("annex")
 
 __author__ = "Gary M. Josack <gary@byoteki.com>"
@@ -35,7 +42,7 @@ def _md5sum(file_path):
     """
     md5 = hashlib.md5()
 
-    with open(file_path) as md5_file:
+    with open(file_path, "rb") as md5_file:
         while True:
             data = md5_file.read(1024 * 1024 * 4)
             if not data:
@@ -114,7 +121,7 @@ class Annex(object):
         return len(self.loaded_modules)
 
     def __iter__(self):
-        for modules in self.loaded_modules.itervalues():
+        for modules in self.loaded_modules.values():
             for plugin in modules.plugins:
                 yield plugin
 
@@ -168,7 +175,7 @@ class Annex(object):
 
             plugins = []
 
-            for name, obj in plugin_module.__dict__.iteritems():
+            for name, obj in plugin_module.__dict__.items():
                 if (inspect.isclass(obj) and
                     issubclass(obj, self.base_plugin) and
                     name != self.base_plugin.__name__):
@@ -179,7 +186,7 @@ class Annex(object):
             if plugins:
                 self.loaded_modules[plugin_file] = PluginModule(plugin_file, plugins)
 
-        except Exception, err:
+        except Exception as err:
             logger.exception("Failed to load %s: %s", plugin_file, err)
             if self._raise_exceptions:
                 raise
